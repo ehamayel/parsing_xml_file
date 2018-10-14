@@ -1,0 +1,13 @@
+<configurations>
+    <server_ip>12.32.43.2</server_ip>
+    <client_ip>12.33.54.5</client_ip>
+    <interfaces>
+        <server_iface name="enp3s0f0">
+            <client_iface name="enp33s023" />
+        </server_iface>
+        <server_iface name="enp3s0f1">
+            <client_iface name="enp21s0f1" />
+        </server_iface>
+    </interfaces>
+    <Branch>master</Branch>
+</configurations>

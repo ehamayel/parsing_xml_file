@@ -43,14 +43,14 @@ if __name__ == '__main__':
 
     # construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser(description="Parsing xml arguments")
-    ap.add_argument("-s", "--server_ip", help="change server ip value")
-    ap.add_argument("-c", "--client_ip", help="change client ip value")
-    ap.add_argument("-i", "--iface", nargs=2, help="change client ip value")
+    ap.add_argument("-s", "--server_ip", dest="server_ip", help="change server ip value")
+    ap.add_argument("-c", "--client_ip", dest="client_ip", help="change client ip value")
+    ap.add_argument("-i", "--iface", dest="iface", nargs=2, help="change client ip value")
 
     args = ap.parse_args()       
 
     if args.server_ip:
-        new_ip = vars(args)["server_ip"]
+        new_ip = args.server_ip
         if(valid_ip(new_ip)):
             root.find('server_ip').text = new_ip
             tree.write('configuration.xml')
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
 
     if args.client_ip:
-        new_ip = vars(args)["client_ip"]
+        new_ip = args.client_ip
         if(valid_ip(new_ip)):
             root.find('client_ip').text = new_ip
             tree.write('configuration.xml')
@@ -69,8 +69,8 @@ if __name__ == '__main__':
             print "invalid ip"
 
     if args.iface:
-        key = vars(args)["iface"][0]
-        new_value = vars(args)["iface"][1]
+        key = args.iface[0]
+        new_value = args.iface[1]
         exist = False
         for siface in root.find('interfaces').findall('server_iface'):
             if siface.get('name') == key:

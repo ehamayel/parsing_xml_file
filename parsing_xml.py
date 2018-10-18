@@ -34,6 +34,7 @@ if __name__ == '__main__':
     ap.add_argument("-s", "--server_ip", dest="server_ip", help="change server ip value")
     ap.add_argument("-c", "--client_ip", dest="client_ip", help="change client ip value")
     ap.add_argument("-i", "--iface", nargs=2, dest="iface", help="change client ip value")
+    ap.add_argument("-b", "--branch", dest="branch", help="change branch value")
     args = ap.parse_args()
     
     tree = ET.parse("configuration.xml")
@@ -55,6 +56,12 @@ if __name__ == '__main__':
                 modify_file = True
             else:
                 client_ip = child.text
+        elif child.tag == 'Branch':
+            if args.branch:
+                child.text = branch = args.branch
+                modify_file = True
+            else:
+                branch = child.text
         elif child.tag == 'interfaces':
             for sub_child in child:
                 #sub_child.get('name') : server_iface name
@@ -74,5 +81,6 @@ if __name__ == '__main__':
     print "{:<15} {:<15}".format('server_iface','client_iface')
     for item in dic_iface.items():
         print "{:<15} {:<15}".format(item[0], item[1])
+    print "Branch: ", branch
 
  

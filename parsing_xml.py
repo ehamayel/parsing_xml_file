@@ -6,6 +6,9 @@ import socket
 
 def valid_ip(ip):
     #return re.match( r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', ip) != None
+    #this reguler expression faild, because it didn't handle the case when 
+    #ip greater than 256 and still 3 digits. so RE was not the best solution 
+   
     #for ip to be valid, it has to be four digit number in range from 0-255
     #dicemal format only: FF.FF.FF.FF in this case considers as invalid
     ips = ip.split('.')
@@ -21,6 +24,7 @@ def valid_ip(ip):
                 break
     return flag
 
+#This function works exactly as valid_ip function, but in different way.
 def valid_ip_socketlib(ip):
     try:
         socket.inet_aton(ip)
@@ -76,11 +80,11 @@ if __name__ == '__main__':
     if modify_file:
         tree.write('configuration.xml')
 
-    print "server_ip: ", server_ip
+    print "server_ip: ", server_ip   #in case of invalid user provided IP, it takes 
+                                     #the old IP "from configuration file"
     print "client_ip: ", client_ip
     print "{:<15} {:<15}".format('server_iface','client_iface')
     for item in dic_iface.items():
         print "{:<15} {:<15}".format(item[0], item[1])
     print "Branch: ", branch
 
- 

@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import re
 import argparse
 import socket
+import xmltodict
 
 def valid_ip_reg(ip):
     return re.match(r'^((\d{1,2}|[1][0-9][0-9]|[2][0-5][0-5])\.){3}(\d{1,2}|[1][0-9][0-9]|[2][0-5][0-5])$', ip) != None
@@ -43,6 +44,52 @@ if __name__ == '__main__':
     ap.add_argument("-i", "--iface", nargs=2, dest="iface", help="change client ip value")
     ap.add_argument("-b", "--branch", dest="branch", help="change branch value")
     args = ap.parse_args()
+    with open('configuration.xml') as fd:
+       dict_xml = xmltodict.parse(fd.read())    
+
+    
+    modify_file = False
+    if args.server_ip and valid_ip_reg(args.server_ip):
+        dict_xml['configurations']['server_ip'] = server_ip = args.server_ip
+        modify_file = True
+    else:
+        server_ip = dict_xml['configurations']['server_ip']
+
+    if args.client_ip and valid_ip_reg(args.client_ip):
+        dict_xml['configurations']['client_ip'] = client_ip = args.client_ip
+        modify_file = True
+    else:
+        client_ip = dict_xml['configurations']['client_ip']
+    
+    dic_iface={}
+    for iface in dict_xml['configurations']['interfaces']['server_iface']:
+        if args.iface and iface['@name'] == args.iface[0]:
+            dic_iface[iface['@name']] = args.iface[1]
+            iface['client_iface']['@name'] = args.iface[1]
+            modify_file = True
+        else:
+            dic_iface[iface['@name']] = iface['client_iface']['@name']
+
+    if args.branch:
+        dict_xml['configurations']['Branch'] = branch = args.branch
+        modify_file = True
+    else:
+        branch = dict_xml['configurations']['Branch']
+
+    if modify_file:
+        out = xmltodict.unparse(dict_xml, pretty=True)
+        with open("configuration.xml", 'w') as file:  
+            file.write(out.encode('utf-8'))
+
+    print "server_ip: ", server_ip   #in case of invalid user provided IP, it takes 
+                                     #the old IP "from configuration file"
+    print "client_ip: ", client_ip
+    print "{:<15} {:<15}".format('server_iface','client_iface')
+    for item in dic_iface.items():
+        print "{:<15} {:<15}".format(item[0], item[1])
+    print "Branch: ", branch
+
+    """
     
     tree = ET.parse("configuration.xml")
     root = tree.getroot()
@@ -82,12 +129,6 @@ if __name__ == '__main__':
 
     if modify_file:
         tree.write('configuration.xml')
+    """
 
-    print "server_ip: ", server_ip   #in case of invalid user provided IP, it takes 
-                                     #the old IP "from configuration file"
-    print "client_ip: ", client_ip
-    print "{:<15} {:<15}".format('server_iface','client_iface')
-    for item in dic_iface.items():
-        print "{:<15} {:<15}".format(item[0], item[1])
-    print "Branch: ", branch
 

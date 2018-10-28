@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 import xml.etree.ElementTree as ET
-#import re
+import re
 import argparse
 import socket
+
+def valid_ip_reg(ip):
+    return re.match(r'^((\d{1,2}|[1][0-9][0-9]|[2][0-5][0-5])\.){3}(\d{1,2}|[1][0-9][0-9]|[2][0-5][0-5])$', ip) != None
 
 def valid_ip(ip):
     #return re.match( r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', ip) != None
@@ -49,13 +52,13 @@ if __name__ == '__main__':
         if child.tag == 'server_ip':
             #If server ip exist and valid, save it and modify the tree, 
             #Else, deal with IP provided from the file
-            if args.server_ip and valid_ip(args.server_ip):
+            if args.server_ip and valid_ip_reg(args.server_ip):
                 child.text = server_ip = args.server_ip
                 modify_file = True
             else:
                 server_ip = child.text
         elif child.tag == 'client_ip':
-            if args.client_ip and valid_ip(args.client_ip):
+            if args.client_ip and valid_ip_reg(args.client_ip):
                 child.text = client_ip = args.client_ip
                 modify_file = True
             else:
